@@ -4,6 +4,15 @@
   "description": "Unofficial MCP server for Karbon practice management — connect Claude Code, Claude Desktop, Copilot, or any MCP client to your Karbon instance.",
   "type": "module",
   "license": "MIT",
+  "author": "Appvisory",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mad-Man-Dan/karbon-mcp-server.git"
+  },
+  "homepage": "https://github.com/Mad-Man-Dan/karbon-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/Mad-Man-Dan/karbon-mcp-server/issues"
+  },
   "bin": {
     "karbon-mcp-server": "dist/index.js"
   },
