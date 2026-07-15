@@ -1,5 +1,7 @@
 # Karbon MCP Server
 
+> 🚧 **Early release** — this project is brand new and we're actively making updates over the next few days. Things may change quickly; pin a version if you need stability, and check back soon.
+
 An unofficial [Model Context Protocol](https://modelcontextprotocol.io) server for [Karbon](https://karbonhq.com) practice management. Connect Claude Code, Claude Desktop, GitHub Copilot, or any MCP-compatible client to your Karbon instance and work with contacts, work items, notes, timesheets, and more using natural language.
 
 > **Disclaimer:** This is a community project and is not affiliated with or endorsed by Karbon. Use at your own risk.
