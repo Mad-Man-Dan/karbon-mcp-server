@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# Local MCP client configs — may contain real Karbon API keys
+.mcp.json
+.vscode/mcp.json
+.cursor/mcp.json
+*.backup-*
