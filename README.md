@@ -16,9 +16,13 @@ An unofficial [Model Context Protocol](https://modelcontextprotocol.io) server f
 | --- | --- |
 | Contacts | `list_contacts`, `get_contact`, `create_contact`, `update_contact` |
 | Organizations | `list_organizations`, `get_organization`, `create_organization`, `update_organization` |
+| Client groups | `list_client_groups`, `get_client_group`, `create_client_group`, `update_client_group` |
 | Work items | `list_work_items`, `get_work_item`, `create_work_item`, `update_work_item` |
 | Notes | `get_note`, `create_note` |
 | Timesheets | `list_timesheets`, `get_timesheet`, `list_time_entries` (read-only) |
+| Invoices | `list_invoices`, `get_invoice` (read-only) |
+| Business cards | `get_business_card`, `update_business_card` — contact details (email, phone, address) |
+| Custom fields | `list_custom_fields`, `get_custom_field_values`, `set_custom_field_values` |
 | Users | `list_users`, `get_user` |
 | Account | `get_tenant_settings`, `list_work_templates` |
 
@@ -244,7 +248,7 @@ The Karbon API is documented at [developers.karbonhq.com](https://developers.kar
 
 ## Roadmap
 
-- [ ] Client groups, invoices, and custom fields tools
+- [x] Client groups, invoices, business cards, and custom fields tools (v0.2.0)
 - [ ] Files and comments
 - [ ] One-click Claude Desktop extension (`.mcpb` bundle)
 - [x] Remote mode (streamable HTTP) for ChatGPT / claude.ai / Cowork
