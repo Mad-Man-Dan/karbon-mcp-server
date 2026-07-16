@@ -74,6 +74,24 @@ export class KarbonClient {
     this.baseUrl = (baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
   }
 
+  /** fetch with the Karbon 429 Retry-After backoff applied. */
+  private async fetchWithRetry(
+    url: string | URL,
+    init: RequestInit,
+  ): Promise<Response> {
+    for (let attempt = 0; ; attempt++) {
+      const response = await fetch(url, init);
+      if (response.status === 429 && attempt < MAX_RETRIES) {
+        const retryAfter = Number(response.headers.get("Retry-After") ?? "2");
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.min(retryAfter, 30) * 1000),
+        );
+        continue;
+      }
+      return response;
+    }
+  }
+
   async request<T = unknown>(
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     path: string,
@@ -87,36 +105,26 @@ export class KarbonClient {
       url.searchParams.set(key, value);
     }
 
-    for (let attempt = 0; ; attempt++) {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${this.bearerToken}`,
-          AccessKey: this.accessKey,
-          Accept: "application/json",
-          ...(options.body !== undefined
-            ? { "Content-Type": "application/json" }
-            : {}),
-        },
-        body:
-          options.body !== undefined ? JSON.stringify(options.body) : undefined,
-      });
+    const response = await this.fetchWithRetry(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${this.bearerToken}`,
+        AccessKey: this.accessKey,
+        Accept: "application/json",
+        ...(options.body !== undefined
+          ? { "Content-Type": "application/json" }
+          : {}),
+      },
+      body:
+        options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    });
 
-      if (response.status === 429 && attempt < MAX_RETRIES) {
-        const retryAfter = Number(response.headers.get("Retry-After") ?? "2");
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.min(retryAfter, 30) * 1000),
-        );
-        continue;
-      }
-
-      const text = await response.text();
-      if (!response.ok) {
-        throw new KarbonApiError(response.status, text);
-      }
-      if (!text) return undefined as T;
-      return JSON.parse(text) as T;
+    const text = await response.text();
+    if (!response.ok) {
+      throw new KarbonApiError(response.status, text);
     }
+    if (!text) return undefined as T;
+    return JSON.parse(text) as T;
   }
 
   /** Upload via multipart/form-data (the Files endpoint is not JSON). */
@@ -124,7 +132,7 @@ export class KarbonClient {
     if (credentialsNotConfigured(this.bearerToken, this.accessKey)) {
       throw new Error(SETUP_HINT);
     }
-    const response = await fetch(this.baseUrl + path, {
+    const response = await this.fetchWithRetry(this.baseUrl + path, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.bearerToken}`,
@@ -141,19 +149,28 @@ export class KarbonClient {
   /**
    * Download binary content (file downloads return octet-stream, not JSON).
    * Accepts an API path or the absolute DownloadUrl the FileList endpoint returns.
+   *
+   * The credentials are only ever sent to the Karbon API origin. Absolute
+   * DownloadUrls are pre-signed (the URL itself carries the auth) and can
+   * point at third-party storage — and the URL arrives as a tool argument,
+   * so attaching the keys to an arbitrary host would let injected content
+   * exfiltrate them.
    */
   async getBinary(pathOrUrl: string): Promise<ArrayBuffer> {
     if (credentialsNotConfigured(this.bearerToken, this.accessKey)) {
       throw new Error(SETUP_HINT);
     }
-    const url = pathOrUrl.startsWith("http")
+    const url = /^https?:\/\//i.test(pathOrUrl)
       ? pathOrUrl
       : this.baseUrl + pathOrUrl;
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${this.bearerToken}`,
-        AccessKey: this.accessKey,
-      },
+    const sameOrigin = new URL(url).origin === new URL(this.baseUrl).origin;
+    const response = await this.fetchWithRetry(url, {
+      headers: sameOrigin
+        ? {
+            Authorization: `Bearer ${this.bearerToken}`,
+            AccessKey: this.accessKey,
+          }
+        : {},
     });
     if (!response.ok) {
       throw new KarbonApiError(response.status, await response.text());

@@ -7,8 +7,8 @@ import assert from "node:assert";
 const EXPECTED = {
   default: 50,
   paymentWrites: 53,
-  readOnly: 32,
-  readOnlyWithPaymentFlag: 32, // read-only always wins
+  readOnly: 31,
+  readOnlyWithPaymentFlag: 31, // read-only always wins
 };
 
 const PAYMENT_WRITE_TOOLS = [
@@ -115,6 +115,11 @@ for (const tool of readOnly) {
     `read-only mode leaked a write tool: ${tool}`,
   );
 }
+// download_file writes to the local disk, so it counts as a write tool.
+assert.ok(
+  !readOnly.includes("download_file"),
+  "read-only mode must not expose download_file (it writes to local disk)",
+);
 console.log(`ok - read-only mode registers ${readOnly.length} tools, no writes`);
 
 const readOnlyPlusFlag = await listTools({

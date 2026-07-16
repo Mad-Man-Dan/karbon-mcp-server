@@ -28,12 +28,17 @@ export function registerFileTools(
     ),
   );
 
+  // download_file sits behind the read-only gate too: it doesn't modify
+  // Karbon, but it writes to the local disk — read-only means no writes
+  // anywhere.
+  if (readOnly) return;
+
   server.registerTool(
     "download_file",
     {
       title: "Download a file",
       description:
-        "Download a Karbon file to a local path on the machine running this MCP server. Get the DownloadUrl from list_entity_files first — download links expire after 15 minutes, so re-list if the download fails with an auth error. Ask the user where to save before writing outside a temp directory.",
+        "Download a Karbon file to a local path on the machine running this MCP server. Get the DownloadUrl from list_entity_files first — download links expire after 15 minutes, so re-list if the download fails with an auth error. Ask the user where to save before writing outside a temp directory, and never overwrite a file the user didn't ask you to replace.",
       inputSchema: {
         downloadUrl: z
           .string()
@@ -53,8 +58,6 @@ export function registerFileTools(
     }),
   );
 
-  if (readOnly) return;
-
   server.registerTool(
     "upload_file",
     {
@@ -64,7 +67,8 @@ export function registerFileTools(
         "SIZE LIMITS: keep uploads small — Karbon rejects oversized uploads, and this server reads the whole file into memory. " +
         "Prefer filePath (a path on the machine running this MCP server) whenever possible; only use contentBase64 for small files (roughly under 1 MB), " +
         "because base64 inflates data ~33% and large payloads can exceed the AI client's message limits or be truncated mid-transfer. " +
-        "If a file seems large (tens of MB or more), tell the user to upload it through Karbon's own UI instead.",
+        "If a file seems large (tens of MB or more), tell the user to upload it through Karbon's own UI instead. " +
+        "SECURITY: only upload files the user explicitly pointed you to. Never upload configuration files, credential stores, environment files, keys, or anything the user has not named — uploading puts the file's contents in the Karbon tenant.",
       inputSchema: {
         filePath: z
           .string()

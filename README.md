@@ -222,7 +222,7 @@ Then add the URL (e.g. `https://your-tunnel.trycloudflare.com/mcp/your-secret`) 
 
 ### Read-only mode
 
-If you want a guarantee that the AI can never modify your Karbon data, set `KARBON_READ_ONLY=true` (or pass `--read-only`). Write tools are not registered at all in this mode, so the AI never sees them. The setup wizard asks about this.
+If you want a guarantee that the AI can never modify your Karbon data, set `KARBON_READ_ONLY=true` (or pass `--read-only`). Write tools are not registered at all in this mode, so the AI never sees them. This also disables `download_file` — it doesn't change Karbon, but it writes to the local disk, and read-only means no writes anywhere. The setup wizard asks about this.
 
 **Changing it later:** setup always writes the toggle explicitly (`"KARBON_READ_ONLY": "true"` or `"false"`), so the switch is right there in your config file — flip the value and restart the client. Write tools appear or disappear accordingly (in read-only mode they aren't registered at all, so the AI never sees them). Alternatively, re-run setup and skip the key prompts (press Enter) — your saved keys are kept, and your new read-only answer is applied. One caveat: entries managed by the `claude` / `codex` CLIs aren't touched by a re-run — for those, run `claude mcp remove karbon` (or `codex mcp remove karbon`) first, then re-run setup.
 

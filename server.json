@@ -6,12 +6,12 @@
     "url": "https://github.com/Mad-Man-Dan/karbon-mcp-server",
     "source": "github"
   },
-  "version": "0.2.3",
+  "version": "0.2.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "karbon-mcp-server",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "transport": {
         "type": "stdio"
       },

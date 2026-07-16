@@ -35,7 +35,7 @@ export function registerNoteTools(
     withErrorHandling(async ({ commentKey }) =>
       jsonResult(
         await client.get(
-          `/Comments('${encodeURIComponent(commentKey).replace(/'/g, "''")}')`,
+          `/Comments('${encodeURIComponent(commentKey.replace(/'/g, "''"))}')`,
         ),
       ),
     ),

@@ -28,7 +28,7 @@ export interface ServerConfig {
 export function createServer(config: ServerConfig): McpServer {
   const server = new McpServer({
     name: "karbon-mcp-server",
-    version: "0.2.3",
+    version: "0.2.4",
   });
 
   const client = new KarbonClient(
