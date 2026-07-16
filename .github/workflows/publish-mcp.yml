@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # OIDC for npm trusted publishing + MCP Registry
-      contents: read
+      contents: write # create the GitHub Release with the .mcpb bundle
 
     steps:
       - uses: actions/checkout@v5
@@ -61,3 +61,15 @@ jobs:
 
       - name: Publish to MCP Registry
         run: ./mcp-publisher publish
+
+      - name: Build Claude Desktop bundle (.mcpb)
+        run: node scripts/build-mcpb.mjs
+
+      - name: Create GitHub Release with the bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF#refs/tags/}" \
+            --title "${GITHUB_REF#refs/tags/}" \
+            --generate-notes \
+            dist-mcpb/karbon-mcp-server.mcpb

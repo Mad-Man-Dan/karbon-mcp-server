@@ -1,6 +1,6 @@
 {
   "name": "karbon-mcp-server",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "mcpName": "io.github.Mad-Man-Dan/karbon-mcp-server",
   "description": "Unofficial MCP server for Karbon practice management — connect Claude Code, Claude Desktop, Copilot, or any MCP client to your Karbon instance.",
   "type": "module",
@@ -31,6 +31,7 @@
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "test": "npm run build && node test/smoke-test.mjs",
+    "build:mcpb": "npm run build && node scripts/build-mcpb.mjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

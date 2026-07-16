@@ -43,6 +43,10 @@ All list tools support OData filtering (`$filter`), ordering (`$orderby`), and p
 
 > **Step-by-step walkthroughs** for Claude Desktop, claude.ai/Cowork, and ChatGPT (written for non-developers) are in [docs/client-guides.md](docs/client-guides.md).
 
+### Claude Desktop: one-click bundle
+
+Download `karbon-mcp-server.mcpb` from the [latest release](https://github.com/Mad-Man-Dan/karbon-mcp-server/releases/latest) and double-click it. Claude Desktop opens a form for your two Karbon keys (stored securely by your OS) plus a read-only toggle — no terminal needed. [Walkthrough](docs/client-guides.md#claude-desktop).
+
 ### One-line install (nothing to download first)
 
 No Node.js? These check for it (installing via winget/Homebrew where possible), then run the setup wizard straight from npm — no repo clone, no manual download:
@@ -267,7 +271,7 @@ The Karbon API is documented at [developers.karbonhq.com](https://developers.kar
 
 - [x] Client groups, invoices, business cards, and custom fields tools (v0.2.0)
 - [ ] Files and comments
-- [ ] One-click Claude Desktop extension (`.mcpb` bundle)
+- [x] One-click Claude Desktop extension (`.mcpb` bundle on [releases](https://github.com/Mad-Man-Dan/karbon-mcp-server/releases))
 - [x] Remote mode (streamable HTTP) for ChatGPT / claude.ai / Cowork
 - [ ] One-click "Deploy to Cloudflare Workers" template for the remote mode
 - [x] Publish to the [MCP Registry](https://registry.modelcontextprotocol.io) (`io.github.Mad-Man-Dan/karbon-mcp-server`)

@@ -15,6 +15,17 @@ Treat both like passwords. They're only ever stored in config files on machines 
 
 *Local install — runs on your computer, nothing hosted.*
 
+### Option A: one-click bundle (easiest — no terminal at all)
+
+1. Download **`karbon-mcp-server.mcpb`** from the [latest release](https://github.com/Mad-Man-Dan/karbon-mcp-server/releases/latest).
+2. Double-click the file (or in Claude Desktop: Settings → Extensions → drag the file in). Claude Desktop shows what the extension is and asks to install.
+3. Fill in the form: paste your **Bearer Token** and **Access Key** (stored securely by your operating system), and choose whether to keep **Read-only mode** on (recommended to start).
+4. Start a new chat and ask *"List my in-progress Karbon work items."*
+
+You can change any of the settings later under Settings → Extensions → Karbon.
+
+### Option B: setup wizard (also configures other clients)
+
 1. **Run the installer.** Open PowerShell (Windows) or Terminal (Mac) and run:
 
    ```powershell
