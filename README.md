@@ -17,14 +17,18 @@ An unofficial [Model Context Protocol](https://modelcontextprotocol.io) server f
 | Contacts | `list_contacts`, `get_contact`, `create_contact`, `update_contact` |
 | Organizations | `list_organizations`, `get_organization`, `create_organization`, `update_organization` |
 | Client groups | `list_client_groups`, `get_client_group`, `create_client_group`, `update_client_group` |
-| Work items | `list_work_items`, `get_work_item`, `create_work_item`, `update_work_item` |
-| Notes | `get_note`, `create_note` |
-| Timesheets | `list_timesheets`, `get_timesheet`, `list_time_entries` (read-only) |
+| Work items | `list_work_items`, `get_work_item`, `get_estimate_summary`, `create_work_item`, `update_work_item` |
+| Notes & comments | `get_note`, `create_note`, `get_comment` |
+| Timesheets | `list_timesheets`, `get_timesheet`, `list_time_entries`, `get_time_entry` (read-only) |
 | Invoices | `list_invoices`, `get_invoice` (read-only) |
+| Payments | `list_payments`, `get_payment`; plus `create_manual_payment`, `delete_manual_payment`, `reverse_manual_payment` behind `KARBON_ALLOW_PAYMENT_WRITES=true` |
 | Business cards | `get_business_card`, `update_business_card` — contact details (email, phone, address) |
 | Custom fields | `list_custom_fields`, `get_custom_field_values`, `set_custom_field_values` |
+| Teams | `list_teams`, `get_team` (read-only) |
 | Users | `list_users`, `get_user` |
-| Account | `get_tenant_settings`, `list_work_templates` |
+| Account | `get_tenant_settings`, `list_work_templates`, `get_work_template` |
+
+`get_contact`, `get_organization`, and `get_client_group` can also look records up by your own `UserDefinedIdentifier` instead of the Karbon key — handy if you sync IDs from your tax software.
 
 All list tools support OData filtering (`$filter`), ordering (`$orderby`), and pagination (`$top`/`$skip`) — so you can ask things like *"show my in-progress work items due this month"* and the AI can express that as a precise query.
 
@@ -205,6 +209,7 @@ Then add the URL (e.g. `https://your-tunnel.trycloudflare.com/mcp/your-secret`) 
 | `KARBON_BEARER_TOKEN` | Yes | Bearer token from Karbon Connected Apps |
 | `KARBON_ACCESS_KEY` | Yes | Access key (JWT) from Karbon Connected Apps |
 | `KARBON_READ_ONLY` | No | Set to `true` to disable all create/update tools |
+| `KARBON_ALLOW_PAYMENT_WRITES` | No | Set to `true` to enable the payment write tools (create/delete/reverse manual payments). Off by default |
 | `KARBON_API_BASE_URL` | No | Override the API base URL (default `https://api.karbonhq.com/v3`) |
 | `KARBON_HTTP_SECRET` | No | HTTP mode only: secret path segment for the endpoint (`/mcp/<secret>`) |
 | `PORT` | No | HTTP mode only: port to listen on (default 8787; `--port` wins) |
@@ -214,6 +219,10 @@ Then add the URL (e.g. `https://your-tunnel.trycloudflare.com/mcp/your-secret`) 
 If you want a guarantee that the AI can never modify your Karbon data, set `KARBON_READ_ONLY=true` (or pass `--read-only`). Write tools are not registered at all in this mode, so the AI never sees them. The setup wizard asks about this.
 
 **Changing it later:** setup always writes the toggle explicitly (`"KARBON_READ_ONLY": "true"` or `"false"`), so the switch is right there in your config file — flip the value and restart the client. Write tools appear or disappear accordingly (in read-only mode they aren't registered at all, so the AI never sees them). Alternatively, re-run setup and skip the key prompts (press Enter) — your saved keys are kept, and your new read-only answer is applied. One caveat: entries managed by the `claude` / `codex` CLIs aren't touched by a re-run — for those, run `claude mcp remove karbon` (or `codex mcp remove karbon`) first, then re-run setup.
+
+### Payment writes (extra opt-in)
+
+Recording, deleting, or reversing payments touches financial records, so those three tools sit behind their own switch — even with writes otherwise enabled they are not registered until you set `KARBON_ALLOW_PAYMENT_WRITES=true` (or pass `--allow-payment-writes`). Setup writes the toggle as `"false"` so it's easy to find and flip in your config file; re-running setup never resets a value you changed by hand. Read-only mode always wins: if `KARBON_READ_ONLY=true`, payment writes stay off regardless.
 
 ### A note on credentials
 

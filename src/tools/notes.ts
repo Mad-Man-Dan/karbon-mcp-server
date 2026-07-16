@@ -22,6 +22,25 @@ export function registerNoteTools(
     ),
   );
 
+  server.registerTool(
+    "get_comment",
+    {
+      title: "Get comment",
+      description:
+        "Get a single comment by its CommentKey. Comments appear on work item and client timelines alongside notes.",
+      inputSchema: {
+        commentKey: z.string().describe("The Karbon CommentKey"),
+      },
+    },
+    withErrorHandling(async ({ commentKey }) =>
+      jsonResult(
+        await client.get(
+          `/Comments('${encodeURIComponent(commentKey).replace(/'/g, "''")}')`,
+        ),
+      ),
+    ),
+  );
+
   if (readOnly) return;
 
   server.registerTool(

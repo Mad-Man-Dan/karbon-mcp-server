@@ -37,6 +37,23 @@ export function registerWorkItemTools(
     ),
   );
 
+  server.registerTool(
+    "get_estimate_summary",
+    {
+      title: "Get estimate summary",
+      description:
+        "Get the estimate summary for a work item (read-only): budgeted vs. actual time and value. Useful for 'are we over budget on this job' questions — pair with list_time_entries for detail.",
+      inputSchema: {
+        workItemKey: z.string().describe("The Karbon WorkItemKey"),
+      },
+    },
+    withErrorHandling(async ({ workItemKey }) =>
+      jsonResult(
+        await client.get(`/EstimateSummaries/${encodeURIComponent(workItemKey)}`),
+      ),
+    ),
+  );
+
   if (readOnly) return;
 
   server.registerTool(

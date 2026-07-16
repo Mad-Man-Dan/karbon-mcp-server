@@ -27,10 +27,15 @@ async function main() {
     process.env.KARBON_READ_ONLY?.toLowerCase() === "true" ||
     process.argv.includes("--read-only");
 
+  const allowPaymentWrites =
+    process.env.KARBON_ALLOW_PAYMENT_WRITES?.toLowerCase() === "true" ||
+    process.argv.includes("--allow-payment-writes");
+
   const config = {
     bearerToken,
     accessKey,
     readOnly,
+    allowPaymentWrites,
     baseUrl: process.env.KARBON_API_BASE_URL,
   };
 

@@ -26,9 +26,13 @@ export function registerOrganizationTools(
     {
       title: "Get organization",
       description:
-        "Get a single organization by OrganizationKey, optionally expanding related data (BusinessCards, AccountingDetail, ClientTeam, Contacts).",
+        "Get a single organization by OrganizationKey — or by your own UserDefinedIdentifier — optionally expanding related data (BusinessCards, AccountingDetail, ClientTeam, Contacts). Provide exactly one of organizationKey or userDefinedIdentifier.",
       inputSchema: {
-        organizationKey: z.string().describe("The Karbon OrganizationKey"),
+        organizationKey: z.string().optional().describe("The Karbon OrganizationKey"),
+        userDefinedIdentifier: z
+          .string()
+          .optional()
+          .describe("Look up by your own external ID instead of the OrganizationKey"),
         expand: z
           .string()
           .optional()
@@ -37,14 +41,17 @@ export function registerOrganizationTools(
           ),
       },
     },
-    withErrorHandling(async ({ organizationKey, expand }) =>
-      jsonResult(
-        await client.get(
-          `/Organizations/${encodeURIComponent(organizationKey)}`,
-          expand ? { $expand: expand } : undefined,
-        ),
-      ),
-    ),
+    withErrorHandling(async ({ organizationKey, userDefinedIdentifier, expand }) => {
+      const path = organizationKey
+        ? `/Organizations/${encodeURIComponent(organizationKey)}`
+        : userDefinedIdentifier
+          ? `/Organizations/GetOrganizationByUserDefinedIdentifier(UserDefinedIdentifier='${encodeURIComponent(userDefinedIdentifier.replace(/'/g, "''"))}')`
+          : null;
+      if (!path) throw new Error("Provide organizationKey or userDefinedIdentifier.");
+      return jsonResult(
+        await client.get(path, expand ? { $expand: expand } : undefined),
+      );
+    }),
   );
 
   if (readOnly) return;

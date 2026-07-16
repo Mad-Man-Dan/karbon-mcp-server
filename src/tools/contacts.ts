@@ -59,9 +59,13 @@ export function registerContactTools(
     {
       title: "Get contact",
       description:
-        "Get a single person contact by ContactKey, optionally expanding related data (BusinessCards, AccountingDetail, ClientTeam).",
+        "Get a single person contact by ContactKey — or by your own UserDefinedIdentifier — optionally expanding related data (BusinessCards, AccountingDetail, ClientTeam). Provide exactly one of contactKey or userDefinedIdentifier.",
       inputSchema: {
-        contactKey: z.string().describe("The Karbon ContactKey"),
+        contactKey: z.string().optional().describe("The Karbon ContactKey"),
+        userDefinedIdentifier: z
+          .string()
+          .optional()
+          .describe("Look up by your own external ID instead of the ContactKey"),
         expand: z
           .string()
           .optional()
@@ -70,14 +74,17 @@ export function registerContactTools(
           ),
       },
     },
-    withErrorHandling(async ({ contactKey, expand }) =>
-      jsonResult(
-        await client.get(
-          `/Contacts/${encodeURIComponent(contactKey)}`,
-          expand ? { $expand: expand } : undefined,
-        ),
-      ),
-    ),
+    withErrorHandling(async ({ contactKey, userDefinedIdentifier, expand }) => {
+      const path = contactKey
+        ? `/Contacts/${encodeURIComponent(contactKey)}`
+        : userDefinedIdentifier
+          ? `/Contacts/GetContactByUserDefinedIdentifier(UserDefinedIdentifier='${encodeURIComponent(userDefinedIdentifier.replace(/'/g, "''"))}')`
+          : null;
+      if (!path) throw new Error("Provide contactKey or userDefinedIdentifier.");
+      return jsonResult(
+        await client.get(path, expand ? { $expand: expand } : undefined),
+      );
+    }),
   );
 
   if (readOnly) return;

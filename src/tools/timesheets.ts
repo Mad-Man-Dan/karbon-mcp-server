@@ -53,4 +53,23 @@ export function registerTimesheetTools(server: McpServer, client: KarbonClient) 
       jsonResult(await client.get("/IndividualTimeEntries", odataQuery(args))),
     ),
   );
+
+  server.registerTool(
+    "get_time_entry",
+    {
+      title: "Get time entry",
+      description:
+        "Get a single individual time entry by its IndividualTimeEntryKey (read-only).",
+      inputSchema: {
+        timeEntryKey: z.string().describe("The Karbon IndividualTimeEntryKey"),
+      },
+    },
+    withErrorHandling(async ({ timeEntryKey }) =>
+      jsonResult(
+        await client.get(
+          `/IndividualTimeEntries/${encodeURIComponent(timeEntryKey)}`,
+        ),
+      ),
+    ),
+  );
 }

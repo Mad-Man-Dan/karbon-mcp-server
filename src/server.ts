@@ -11,11 +11,15 @@ import { registerClientGroupTools } from "./tools/client-groups.js";
 import { registerInvoiceTools } from "./tools/invoices.js";
 import { registerBusinessCardTools } from "./tools/business-cards.js";
 import { registerCustomFieldTools } from "./tools/custom-fields.js";
+import { registerPaymentTools } from "./tools/payments.js";
+import { registerTeamTools } from "./tools/teams.js";
 
 export interface ServerConfig {
   bearerToken: string;
   accessKey: string;
   readOnly: boolean;
+  /** Payment writes are financial records, so they need their own opt-in. */
+  allowPaymentWrites?: boolean;
   baseUrl?: string;
 }
 
@@ -38,6 +42,13 @@ export function createServer(config: ServerConfig): McpServer {
   registerNoteTools(server, client, config.readOnly);
   registerTimesheetTools(server, client);
   registerInvoiceTools(server, client);
+  registerPaymentTools(
+    server,
+    client,
+    config.readOnly,
+    config.allowPaymentWrites ?? false,
+  );
+  registerTeamTools(server, client);
   registerBusinessCardTools(server, client, config.readOnly);
   registerCustomFieldTools(server, client, config.readOnly);
   registerUserTools(server, client);

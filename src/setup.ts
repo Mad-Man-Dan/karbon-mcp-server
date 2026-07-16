@@ -334,6 +334,12 @@ function writeClientConfig(
       newEntry.env.KARBON_ACCESS_KEY = oldEnv.KARBON_ACCESS_KEY;
       credentialsKept = true;
     }
+    // Setup never asks about payment writes, so a value the user flipped by
+    // hand always wins over our "false" default.
+    if (oldEnv.KARBON_ALLOW_PAYMENT_WRITES !== undefined) {
+      newEntry.env.KARBON_ALLOW_PAYMENT_WRITES =
+        oldEnv.KARBON_ALLOW_PAYMENT_WRITES;
+    }
     const backup = `${filePath}.backup-${new Date()
       .toISOString()
       .replace(/[:.]/g, "-")}`;
@@ -576,6 +582,7 @@ export async function runSetup(argv: string[]): Promise<void> {
       KARBON_BEARER_TOKEN: PLACEHOLDER_BEARER,
       KARBON_ACCESS_KEY: PLACEHOLDER_ACCESS_KEY,
       KARBON_READ_ONLY: readOnly ? "true" : "false",
+      KARBON_ALLOW_PAYMENT_WRITES: "false",
     };
     console.log(
       JSON.stringify(
@@ -620,6 +627,9 @@ export async function runSetup(argv: string[]): Promise<void> {
       KARBON_BEARER_TOKEN: bearer,
       KARBON_ACCESS_KEY: accessKey,
       KARBON_READ_ONLY: effectiveReadOnly ? "true" : "false",
+      // Off by default; flip to "true" by hand to enable the payment write
+      // tools (create/delete/reverse manual payments).
+      KARBON_ALLOW_PAYMENT_WRITES: "false",
     };
     const entry: ServerEntry = {
       command: "npx",

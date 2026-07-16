@@ -31,23 +31,30 @@ export function registerClientGroupTools(
     {
       title: "Get client group",
       description:
-        "Get a single client group by ClientGroupKey, optionally expanding related data (BusinessCard, ClientTeam). Includes the group's members (contacts and organizations).",
+        "Get a single client group by ClientGroupKey — or by your own UserDefinedIdentifier — optionally expanding related data (BusinessCard, ClientTeam). Includes the group's members (contacts and organizations). Provide exactly one of clientGroupKey or userDefinedIdentifier.",
       inputSchema: {
-        clientGroupKey: z.string().describe("The Karbon ClientGroupKey"),
+        clientGroupKey: z.string().optional().describe("The Karbon ClientGroupKey"),
+        userDefinedIdentifier: z
+          .string()
+          .optional()
+          .describe("Look up by your own external ID instead of the ClientGroupKey"),
         expand: z
           .string()
           .optional()
           .describe("Comma-separated related data to include: BusinessCard, ClientTeam"),
       },
     },
-    withErrorHandling(async ({ clientGroupKey, expand }) =>
-      jsonResult(
-        await client.get(
-          `/ClientGroups/${encodeURIComponent(clientGroupKey)}`,
-          expand ? { $expand: expand } : undefined,
-        ),
-      ),
-    ),
+    withErrorHandling(async ({ clientGroupKey, userDefinedIdentifier, expand }) => {
+      const path = clientGroupKey
+        ? `/ClientGroups/${encodeURIComponent(clientGroupKey)}`
+        : userDefinedIdentifier
+          ? `/ClientGroups/GetClientGroupByUserDefinedIdentifier(UserDefinedIdentifier='${encodeURIComponent(userDefinedIdentifier.replace(/'/g, "''"))}')`
+          : null;
+      if (!path) throw new Error("Provide clientGroupKey or userDefinedIdentifier.");
+      return jsonResult(
+        await client.get(path, expand ? { $expand: expand } : undefined),
+      );
+    }),
   );
 
   if (readOnly) return;
