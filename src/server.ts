@@ -13,6 +13,8 @@ import { registerBusinessCardTools } from "./tools/business-cards.js";
 import { registerCustomFieldTools } from "./tools/custom-fields.js";
 import { registerPaymentTools } from "./tools/payments.js";
 import { registerTeamTools } from "./tools/teams.js";
+import { registerFileTools } from "./tools/files.js";
+import { registerWorkScheduleTools } from "./tools/work-schedules.js";
 
 export interface ServerConfig {
   bearerToken: string;
@@ -48,7 +50,9 @@ export function createServer(config: ServerConfig): McpServer {
     config.readOnly,
     config.allowPaymentWrites ?? false,
   );
-  registerTeamTools(server, client);
+  registerTeamTools(server, client, config.readOnly);
+  registerFileTools(server, client, config.readOnly);
+  registerWorkScheduleTools(server, client, config.readOnly);
   registerBusinessCardTools(server, client, config.readOnly);
   registerCustomFieldTools(server, client, config.readOnly);
   registerUserTools(server, client);

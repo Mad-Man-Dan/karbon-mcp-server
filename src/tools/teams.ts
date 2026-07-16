@@ -3,7 +3,11 @@ import { z } from "zod";
 import { KarbonClient } from "../karbon-client.js";
 import { jsonResult, withErrorHandling } from "../tool-helpers.js";
 
-export function registerTeamTools(server: McpServer, client: KarbonClient) {
+export function registerTeamTools(
+  server: McpServer,
+  client: KarbonClient,
+  readOnly: boolean,
+) {
   server.registerTool(
     "list_teams",
     {
@@ -38,5 +42,50 @@ export function registerTeamTools(server: McpServer, client: KarbonClient) {
     withErrorHandling(async ({ teamKey }) =>
       jsonResult(await client.get(`/Teams/${encodeURIComponent(teamKey)}`)),
     ),
+  );
+
+  if (readOnly) return;
+
+  server.registerTool(
+    "add_team_members",
+    {
+      title: "Add team members",
+      description:
+        "Add one or more users to a team by their UserKeys (find them with list_users). Users already on the team are skipped. Team membership can affect work visibility and assignment — confirm with the user before changing it.",
+      inputSchema: {
+        teamKey: z.string().describe("The Karbon TeamKey"),
+        UserKeys: z
+          .array(z.string())
+          .min(1)
+          .describe("UserKeys of the users to add"),
+      },
+    },
+    withErrorHandling(async ({ teamKey, UserKeys }) => {
+      const result = await client.post(
+        `/Teams/${encodeURIComponent(teamKey)}/AddMembers`,
+        { UserKeys },
+      );
+      return jsonResult(result ?? { success: true, teamKey, added: UserKeys });
+    }),
+  );
+
+  server.registerTool(
+    "remove_team_member",
+    {
+      title: "Remove team member",
+      description:
+        "Remove a user from a team by their UserKey. Team membership can affect work visibility and assignment — confirm with the user before changing it.",
+      inputSchema: {
+        teamKey: z.string().describe("The Karbon TeamKey"),
+        UserKey: z.string().describe("UserKey of the user to remove"),
+      },
+    },
+    withErrorHandling(async ({ teamKey, UserKey }) => {
+      const result = await client.post(
+        `/Teams/${encodeURIComponent(teamKey)}/RemoveMember`,
+        { UserKey },
+      );
+      return jsonResult(result ?? { success: true, teamKey, removed: UserKey });
+    }),
   );
 }

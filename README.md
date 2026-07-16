@@ -23,8 +23,10 @@ An unofficial [Model Context Protocol](https://modelcontextprotocol.io) server f
 | Invoices | `list_invoices`, `get_invoice` (read-only) |
 | Payments | `list_payments`, `get_payment`; plus `create_manual_payment`, `delete_manual_payment`, `reverse_manual_payment` behind `KARBON_ALLOW_PAYMENT_WRITES=true` |
 | Business cards | `get_business_card`, `update_business_card` — contact details (email, phone, address) |
-| Custom fields | `list_custom_fields`, `get_custom_field_values`, `set_custom_field_values` |
-| Teams | `list_teams`, `get_team` (read-only) |
+| Custom fields | `list_custom_fields`, `get_custom_field_values`, `set_custom_field_values`, `create_custom_field`, `delete_custom_field` |
+| Files | `list_entity_files`, `download_file`, `upload_file` |
+| Teams | `list_teams`, `get_team`, `add_team_members`, `remove_team_member` |
+| Work schedules | `get_work_schedule`, `create_work_schedule`, `update_work_schedule` |
 | Users | `list_users`, `get_user` |
 | Account | `get_tenant_settings`, `list_work_templates`, `get_work_template` |
 

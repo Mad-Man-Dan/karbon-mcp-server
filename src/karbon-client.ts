@@ -119,6 +119,48 @@ export class KarbonClient {
     }
   }
 
+  /** Upload via multipart/form-data (the Files endpoint is not JSON). */
+  async postMultipart<T = unknown>(path: string, form: FormData): Promise<T> {
+    if (credentialsNotConfigured(this.bearerToken, this.accessKey)) {
+      throw new Error(SETUP_HINT);
+    }
+    const response = await fetch(this.baseUrl + path, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.bearerToken}`,
+        AccessKey: this.accessKey,
+        Accept: "application/json",
+      },
+      body: form,
+    });
+    const text = await response.text();
+    if (!response.ok) throw new KarbonApiError(response.status, text);
+    return text ? (JSON.parse(text) as T) : (undefined as T);
+  }
+
+  /**
+   * Download binary content (file downloads return octet-stream, not JSON).
+   * Accepts an API path or the absolute DownloadUrl the FileList endpoint returns.
+   */
+  async getBinary(pathOrUrl: string): Promise<ArrayBuffer> {
+    if (credentialsNotConfigured(this.bearerToken, this.accessKey)) {
+      throw new Error(SETUP_HINT);
+    }
+    const url = pathOrUrl.startsWith("http")
+      ? pathOrUrl
+      : this.baseUrl + pathOrUrl;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${this.bearerToken}`,
+        AccessKey: this.accessKey,
+      },
+    });
+    if (!response.ok) {
+      throw new KarbonApiError(response.status, await response.text());
+    }
+    return response.arrayBuffer();
+  }
+
   get<T = unknown>(path: string, query?: Record<string, string>) {
     return this.request<T>("GET", path, { query });
   }
