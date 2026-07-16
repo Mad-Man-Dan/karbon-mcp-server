@@ -2,7 +2,7 @@
 
 > 🚧 **Early release** — this project is brand new and we're actively making updates over the next few days. Things may change quickly; pin a version if you need stability, and check back soon.
 
-An unofficial [Model Context Protocol](https://modelcontextprotocol.io) server for [Karbon](https://karbonhq.com) practice management. Connect Claude Code, Claude Desktop, GitHub Copilot, or any MCP-compatible client to your Karbon instance and work with contacts, work items, notes, timesheets, and more using natural language.
+An unofficial [Model Context Protocol](https://modelcontextprotocol.io) server for [Karbon](https://karbonhq.com) practice management. Connect Claude Code, Claude Desktop, GitHub Copilot, or any MCP-compatible client to your Karbon instance and work with contacts, work items, time, invoices, payments, files, and more using natural language.
 
 > **Disclaimer:** This is a community project and is not affiliated with or endorsed by Karbon. Use at your own risk.
 
@@ -233,10 +233,14 @@ Whether you type your keys into the setup wizard or paste them into a config fil
 ## Example prompts
 
 - "Find the contact record for Jane Smith and show her business card details."
+- "Update Jane Smith's email address and phone number."
 - "List all in-progress work items assigned to me, ordered by due date."
+- "Are we over budget on the Hendersons' tax return?"
+- "Which invoices are still awaiting payment, and for how much?"
 - "Create a work item for Acme Corp's 2025 tax return, assigned to alex@firm.com, starting next Monday."
 - "Add a note to the Smith work item summarizing today's client call."
 - "How many hours were logged against client work last week?"
+- "What files are attached to the Miller onboarding work item?"
 
 ## Development
 
@@ -244,8 +248,10 @@ Whether you type your keys into the setup wizard or paste them into a config fil
 git clone https://github.com/Mad-Man-Dan/karbon-mcp-server.git
 cd karbon-mcp-server
 npm install
-npm run build
+npm test        # builds, then runs the smoke tests (tool matrix across flag combos)
 ```
+
+Releases are automated: pushing a `v*` tag runs CI, publishes to npm via [trusted publishing](https://docs.npmjs.com/trusted-publishers) (OIDC — no tokens), and updates the [MCP Registry](https://registry.modelcontextprotocol.io) listing.
 
 Test locally with the [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
 

@@ -38,6 +38,10 @@ Treat both like passwords. They're only ever stored in config files on machines 
 
 4. **Verify:** start a new chat and ask *"List my in-progress Karbon work items."* You should see Claude call the `karbon` tools. If it responds with setup instructions instead, a key was skipped or mistyped — re-run the wizard.
 
+5. **Optional switches** (edit the config file the wizard points you to, then restart the client):
+   - `"KARBON_READ_ONLY": "true"` — the AI can view everything but never create or change anything.
+   - `"KARBON_ALLOW_PAYMENT_WRITES": "true"` — enables recording/deleting/reversing manual payments against invoices. Off by default because these touch financial records; leave it off unless you specifically want it.
+
 ---
 
 ## claude.ai (web chat) & Claude Cowork
@@ -72,7 +76,7 @@ Treat both like passwords. They're only ever stored in config files on machines 
 
 3. **In claude.ai (or Cowork):** Settings → **Connectors** → **Add custom connector** → paste the URL → Add. The Karbon tools appear in the tools menu of new chats.
 
-4. **Verify:** ask *"What work types does our Karbon account have?"*
+4. **Verify:** ask *"What work types does our Karbon account have?"* or *"Which invoices are awaiting payment?"*
 
 **Security notes:** anyone with the full URL has the same access as your API keys — keep it private, use a long secret, and prefer read-only mode. Host it yourself; don't use anyone else's hosted instance of this server, because they'd hold your keys.
 

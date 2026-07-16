@@ -1,0 +1,63 @@
+# Publishes a release to npm and the MCP Registry when a version tag is pushed:
+#
+#   git tag v0.2.1 && git push origin v0.2.1
+#
+# No stored credentials: npm uses Trusted Publishing (OIDC) configured on the
+# package's npmjs.com settings, and the MCP Registry uses GitHub OIDC.
+name: Publish release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # OIDC for npm trusted publishing + MCP Registry
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "lts/*"
+          registry-url: "https://registry.npmjs.org"
+
+      # npm 11.5.1+ is required for OIDC trusted publishing
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Check tag matches package.json version
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Tag v$TAG_VERSION does not match package.json version $PKG_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and run smoke tests
+        run: npm test
+
+      - name: Publish to npm (trusted publishing)
+        run: npm publish
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Sync server.json version with the tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          jq --arg v "$VERSION" '.version = $v | .packages[0].version = $v' server.json > server.tmp && mv server.tmp server.json
+
+      - name: Publish to MCP Registry
+        run: ./mcp-publisher publish
