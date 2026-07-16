@@ -270,7 +270,7 @@ The Karbon API is documented at [developers.karbonhq.com](https://developers.kar
 - [ ] One-click Claude Desktop extension (`.mcpb` bundle)
 - [x] Remote mode (streamable HTTP) for ChatGPT / claude.ai / Cowork
 - [ ] One-click "Deploy to Cloudflare Workers" template for the remote mode
-- [ ] Publish to the MCP registry
+- [x] Publish to the [MCP Registry](https://registry.modelcontextprotocol.io) (`io.github.Mad-Man-Dan/karbon-mcp-server`)
 
 Contributions welcome — open an issue or PR.
 
