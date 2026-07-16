@@ -90,6 +90,12 @@ for (const tool of PAYMENT_WRITE_TOOLS) {
     `default mode must not expose ${tool} without KARBON_ALLOW_PAYMENT_WRITES`,
   );
 }
+// Counterpart to the read-only absence check below — a count offset by an
+// added tool must not mask download_file disappearing entirely.
+assert.ok(
+  defaults.includes("download_file"),
+  "default mode must expose download_file",
+);
 console.log(`ok - default mode registers ${defaults.length} tools, payment writes hidden`);
 
 const withPayments = await listTools({ KARBON_ALLOW_PAYMENT_WRITES: "true" });
