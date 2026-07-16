@@ -267,14 +267,7 @@ npx @modelcontextprotocol/inspector \
 
 The Karbon API is documented at [developers.karbonhq.com](https://developers.karbonhq.com/) with an OpenAPI spec at [karbonhq/karbon-api-reference](https://github.com/karbonhq/karbon-api-reference).
 
-## Roadmap
-
-- [x] Client groups, invoices, business cards, and custom fields tools (v0.2.0)
-- [ ] Files and comments
-- [x] One-click Claude Desktop extension (`.mcpb` bundle on [releases](https://github.com/Mad-Man-Dan/karbon-mcp-server/releases))
-- [x] Remote mode (streamable HTTP) for ChatGPT / claude.ai / Cowork
-- [ ] One-click "Deploy to Cloudflare Workers" template for the remote mode
-- [x] Publish to the [MCP Registry](https://registry.modelcontextprotocol.io) (`io.github.Mad-Man-Dan/karbon-mcp-server`)
+## Contributing
 
 Contributions welcome — open an issue or PR.
 
