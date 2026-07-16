@@ -1,0 +1,50 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mad-man-dan/karbon-mcp-server",
+  "description": "Unofficial MCP server for Karbon practice management — contacts, work items, time, invoices, payments, files, and more.",
+  "repository": {
+    "url": "https://github.com/Mad-Man-Dan/karbon-mcp-server",
+    "source": "github"
+  },
+  "version": "0.2.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "karbon-mcp-server",
+      "version": "0.2.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "KARBON_BEARER_TOKEN",
+          "description": "Bearer token (Application Authorization Token) from Karbon → Settings → Connected Apps → API Applications",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "KARBON_ACCESS_KEY",
+          "description": "Access key (JWT starting with 'ey') from Karbon → Settings → Connected Apps → API Applications",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "KARBON_READ_ONLY",
+          "description": "Set to 'true' to disable all create/update tools (they are not registered at all)",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "KARBON_ALLOW_PAYMENT_WRITES",
+          "description": "Set to 'true' to enable the payment write tools (create/delete/reverse manual payments); off by default",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
